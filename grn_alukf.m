@@ -83,8 +83,8 @@ for mc = 1: MC_N
     fprintf('This is %d monte carlo\n',mc);
     tic
     % initialize coefficients and states
-    a_hat = randn(n_gene,n_cpx)
-    b_hat = randn(n_gene,n_cpx - 1)
+    a_hat = randn(n_gene,n_cpx);
+    b_hat = randn(n_gene,n_cpx - 1);
     s_t = 5*abs(randn(n_state,1));
     %z = s_t + r*randn(n_state,1); % observation of the x0
     %s_t = ftrue2(s_t) + r*randn(n_state,1); % x1
@@ -134,7 +134,7 @@ for mc = 1: MC_N
             cpx = pro_cpx(x_pre(n_gene + 1:n_state));
             y_pre = x_pre(n_gene + 1:n_state);
             y_temp = x_temp(n_gene + 1:n_state);
-            y_temp - y_pre -d'*x_pre(1:n_gene) + e'*y_pre
+%             y_temp - y_pre -d'*x_pre(1:n_gene) + e'*y_pre
             % to test the amplitude of the noise, which may be color since
             % there is a term in the denominator
             %         w1 = 1 + b_hat(1,:)*cpx(2:end)
@@ -145,8 +145,8 @@ for mc = 1: MC_N
             b1(k) = (1 - c(1)*dt)*x_pre(1) - x_temp(1);
             b2(k) = (1 - c(2)*dt)*x_pre(2) - x_temp(2);
             %b3(k) = (1 - c(3)*dt)*x_pre(3) - x_temp(3);
-            [thea1 P_para1] = myRLS(A1(:,k-1),b1(k-1),thea1,P_para1,0.1,0,0.1,k);%!!!!
-            [thea2 P_para2] = myRLS(A2(:,k-1),b2(k-1),thea2,P_para2,0.1,0,0.1,k); %!!!!
+            [thea1, P_para1] = myRLS(A1(:,k-1),b1(k-1),thea1,P_para1,0.1,0,0.1);%!!!!
+            [thea2, P_para2] = myRLS(A2(:,k-1),b2(k-1),thea2,P_para2,0.1,0,0.1); %!!!!
             %[thea3 P_para3] = myRLS(A3(:,k-1),b3(k-1),thea3,P_para3,0.9,0,0.1,k);
             
             n1 = size(a,2);
@@ -217,24 +217,24 @@ end
 %     std_b_hat = std(b_hat_mc'); % standard deviation of the estimated b
 %     a_hat_fl = vec2mat(mean_a_hat,n_cpx); % final average a_hat
 %     b_hat_fl = vec2mat(mean_b_hat, n_cpx); % final average b_hat
-cvx_begin quiet
-variables aa1(n1) bb1(n2)
-minimize (sum_square([aa1;bb1]'*A1-b1) + 0.01*norm(bb1))
-subject to
-aa1 >= 0
-aa1 <= [1;bb1]
-cvx_end
+% cvx_begin quiet
+% variables aa1(n1) bb1(n2)
+% minimize (sum_square([aa1;bb1]'*A1-b1) + 0.01*norm(bb1))
+% subject to
+% aa1 >= 0
+% aa1 <= [1;bb1]
+% cvx_end
+% 
+% cvx_begin quiet
+% variables aa2(n1) bb2(n2)
+% minimize (sum_square([aa2;bb2]'*A2-b2) + 0.01*norm(bb2))
+% subject to
+% aa2 >= 0
+% aa2 <= [1;bb2]
+% cvx_end
 
-cvx_begin quiet
-variables aa2(n1) bb2(n2)
-minimize (sum_square([aa2;bb2]'*A2-b2) + 0.01*norm(bb2))
-subject to
-aa2 >= 0
-aa2 <= [1;bb2]
-cvx_end
-
-S1 = svd(A1)
-S2 = svd(A2)
+S1 = svd(A1);
+S2 = svd(A2);
 tt = 0:1:N-1;
 subplot(3,1,1)
 plot(tt,sV(1,:),'r-',tt,sV(2,:),'r-.',tt,sV(3,:),'r.',tt,sV(4,:),'r*',tt,(xV(1,:))','b-',tt,(xV(2,:))','b-.',tt,(xV(3,:))','b.',tt,(xV(4,:))','b*')
